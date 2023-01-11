@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.messages import constants
 from django.contrib.auth.models import User
-from django.http import HttpResponse
 from .utils.formFieldsValidate import *
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
