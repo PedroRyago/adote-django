@@ -3,7 +3,7 @@
 
 ## Requerimentos
 
-Este projeto requer Python 3.8+ e pip. Certifique-se de que você tem esses instalados antes de prosseguir.
+Este projeto requer Python 3.8+ e pip. Certifique-se de que você tem esses recursos instalados antes de prosseguir.
 
 ## Instalação
 
