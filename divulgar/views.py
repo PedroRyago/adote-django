@@ -3,8 +3,11 @@ from django.contrib.auth.decorators import login_required
 from .models import Pet, Tag, Raca
 from django.contrib import messages
 from django.shortcuts import redirect
+from adotar.models import PedidoAdocao
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 
-@login_required
+@login_required(login_url='/auth/login')
 def novo_pet(request):
     if request.method == "GET":
         tags = Tag.objects.all()
@@ -31,13 +34,13 @@ def novo_pet(request):
         racas = Raca.objects.all()
         return render(request, 'novo_pet.html', {'tags': tags, 'racas': racas})
 
-@login_required
+@login_required(login_url='/auth/login')
 def seus_pets(request):
     if request.method == "GET":
         pets = Pet.objects.filter(usuario=request.user)
         return render(request, 'seus_pets.html', {'pets': pets})
 
-@login_required
+@login_required(login_url='/auth/login')
 def remover_pet(request, id):
     pet = Pet.objects.get(id=id)
     if request.user != pet.usuario:
@@ -46,3 +49,36 @@ def remover_pet(request, id):
     pet.delete()
     messages.add_message(request, messages.SUCCESS, 'Pet removido com sucesso')
     return redirect('/divulgar/seus_pets')
+
+@login_required(login_url='/auth/login')
+def ver_pet(request, id):
+    if request.method == "GET":
+        pet = Pet.objects.get(id = id)
+        return render(request, 'ver_pet.html', {'pet': pet})
+
+@login_required(login_url='/auth/login')
+def ver_pedido_adocao(request):
+    if request.method == "GET":
+        pedidos = PedidoAdocao.objects.filter(usuario=request.user).filter(status="AG")
+        return render(request, 'ver_pedido_adocao.html', {'pedidos': pedidos})
+
+@login_required(login_url='/auth/login')
+def dashboard(request):
+    if request.method == "GET":
+        return render(request, 'dashboard.html')
+
+@login_required(login_url='/auth/login')
+@csrf_exempt
+def api_adocoes_por_raca(request):
+    racas = Raca.objects.all()
+
+    qtd_adocoes = []
+    for raca in racas:
+        adocoes = PedidoAdocao.objects.filter(pet__raca=raca).filter(status="AP").count()
+        qtd_adocoes.append(adocoes)
+
+    racas = [raca.raca for raca in racas]
+    data = {'qtd_adocoes': qtd_adocoes,
+            'labels': racas}
+
+    return JsonResponse(data)

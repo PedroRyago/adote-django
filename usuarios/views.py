@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from .utils.formFieldsValidate import *
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def cadastro(request):
@@ -65,6 +66,7 @@ def user_login(request):
     elif request.method == 'GET':
         return render(request, 'login.html')
 
+@login_required(login_url='/auth/login')
 def user_logout(request):
 
     if not request.user.is_authenticated:
